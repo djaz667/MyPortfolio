@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Shield, Check, Trash2, X, Plus, Send } from "lucide-react";
+import { Star, Shield, Check, Trash2, Plus, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,8 +55,12 @@ export function TestimonialManager() {
     }
   };
 
+  // Liste à afficher selon admin ou public
+  const displayedTestimonials = isAdmin ? testimonials : publicTestimonials;
+
   return (
     <div className="flex flex-col gap-12">
+      {/* Header & Admin */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="text-4xl font-bold">Témoignages</h2>
@@ -99,6 +103,7 @@ export function TestimonialManager() {
           </Dialog>
         </div>
 
+        {/* Ajouter un témoignage */}
         <Dialog open={isTestimonialModalOpen} onOpenChange={setIsTestimonialModalOpen}>
           <DialogTrigger asChild>
             <Button className="bg-royal-blue text-white rounded-full px-6 gap-2">
@@ -181,66 +186,71 @@ export function TestimonialManager() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {(isAdmin ? testimonials : publicTestimonials).map((t, i) => (
-          <motion.div
-            key={t.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className={`relative bg-white dark:bg-zinc-900 p-8 rounded-4xl border border-border/50 flex flex-col gap-6 group shadow-sm hover:shadow-xl transition-all duration-500 ${t.status === 'pending' ? 'ring-2 ring-royal-blue/20 bg-royal-blue/5' : ''}`}
-          >
-            {isAdmin && (
-              <div className="absolute top-4 right-4 flex gap-2 z-10">
-                {t.status === 'pending' && (
+      {/* Témoignages */}
+      {displayedTestimonials.length === 0 ? (
+        <p className="text-muted-foreground italic text-center">Aucun témoignage disponible pour le moment.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {displayedTestimonials.map((t, i) => (
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`relative bg-white dark:bg-zinc-900 p-8 rounded-4xl border border-border/50 flex flex-col gap-6 group shadow-sm hover:shadow-xl transition-all duration-500 ${t.status === 'pending' ? 'ring-2 ring-royal-blue/20 bg-royal-blue/5' : ''}`}
+            >
+              {isAdmin && (
+                <div className="absolute top-4 right-4 flex gap-2 z-10">
+                  {t.status === 'pending' && (
+                    <button 
+                      onClick={() => approveTestimonial(t.id)}
+                      className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                      title="Approuver"
+                    >
+                      <Check className="w-5 h-5" />
+                    </button>
+                  )}
                   <button 
-                    onClick={() => approveTestimonial(t.id)}
-                    className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-                    title="Approuver"
+                    onClick={() => deleteTestimonial(t.id)}
+                    className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                    title="Supprimer"
                   >
-                    <Check className="w-5 h-5" />
+                    <Trash2 className="w-5 h-5" />
                   </button>
-                )}
-                <button 
-                  onClick={() => deleteTestimonial(t.id)}
-                  className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-                  title="Supprimer"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-
-            {t.status === 'pending' && (
-              <span className="absolute top-4 left-4 bg-royal-blue text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                En attente
-              </span>
-            )}
-
-            <div className="flex gap-1 text-royal-blue">
-              {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-            </div>
-            
-            <p className="italic text-muted-foreground leading-relaxed grow">"{t.text}"</p>
-            
-            <div className="flex items-center gap-4">
-              {t.image ? (
-                <div className="w-12 h-12 rounded-full overflow-hidden">
-                  <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <div className="w-12 h-12 rounded-full bg-royal-blue/10 flex items-center justify-center text-royal-blue font-bold text-lg">
-                  {t.name.charAt(0)}
                 </div>
               )}
-              <div>
-                <p className="font-bold">{t.name}</p>
-                <p className="text-sm text-muted-foreground">{t.role}</p>
+
+              {t.status === 'pending' && (
+                <span className="absolute top-4 left-4 bg-royal-blue text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                  En attente
+                </span>
+              )}
+
+              <div className="flex gap-1 text-royal-blue">
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              
+              <p className="italic text-muted-foreground leading-relaxed grow">"{t.text}"</p>
+              
+              <div className="flex items-center gap-4">
+                {t.image ? (
+                  <div className="w-12 h-12 rounded-full overflow-hidden">
+                    <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-royal-blue/10 flex items-center justify-center text-royal-blue font-bold text-lg">
+                    {t.name.charAt(0)}
+                  </div>
+                )}
+                <div>
+                  <p className="font-bold">{t.name}</p>
+                  <p className="text-sm text-muted-foreground">{t.role}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

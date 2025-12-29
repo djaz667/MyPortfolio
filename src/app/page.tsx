@@ -41,7 +41,7 @@ export default function Home() {
             variants={fadeInUp}
             className="text-6xl md:text-8xl font-bold tracking-tight text-balance leading-[0.9]"
           >
-            Software <span className="text-royal-blue">Engineering</span> &
+            Software <span className="text-royal-blue">Engineering</span>|
           </motion.h1>
           <motion.h1 
             variants={fadeInUp}
