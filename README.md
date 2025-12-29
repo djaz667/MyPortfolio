@@ -228,3 +228,10 @@ Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de
 ---
 
 ⭐ Si ce projet vous plaît, n'hésitez pas à lui donner une étoile !
+
+
+
+
+git add .
+git commit -m "update"
+git push
