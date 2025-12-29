@@ -1,43 +1,47 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 
-const LOADER = path.resolve(__dirname, 'src/visual-edits/component-tagger-loader.js');
-
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
+
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**',
+        protocol: "https",
+        hostname: "**",
       },
       {
-        protocol: 'http',
-        hostname: '**',
+        protocol: "http",
+        hostname: "**",
       },
     ],
-    formats: ['image/webp', 'image/avif'],
+    formats: ["image/webp", "image/avif"],
   },
-  outputFileTracingRoot: path.resolve(__dirname, '../../'),
+
+  outputFileTracingRoot: path.resolve(__dirname),
+
   typescript: {
     ignoreBuildErrors: true,
   },
+
   eslint: {
     ignoreDuringBuilds: true,
   },
-  devIndicators: false, // <-- Désactive les badges et flèches dev
-  // Optimisations de performance
-  swcMinify: true,
-  experimental: {
-    optimizeCss: true,
-  },
+
+  devIndicators: false,
+
+  // ⚠️ IMPORTANT : on supprime TOUT ce qui causait l’erreur
+  // swcMinify ❌
+  // experimental.optimizeCss ❌
+  // critters ❌
+
   turbopack: {
     rules: {
-      // Si tu veux complètement supprimer Orchids, commente ou supprime ce loader
       "*.{jsx,tsx}": {
-        // loaders: [LOADER]
-      }
-    }
-  }
+        // loaders: [] // volontairement vide
+      },
+    },
+  },
 };
 
 export default nextConfig;
