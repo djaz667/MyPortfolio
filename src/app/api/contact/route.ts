@@ -3,7 +3,7 @@ import { Resend } from "resend";
 import type { NextRequest } from "next/server";
 
 // Initialisation de Resend avec la clé de ton .env.local
-const resend = new Resend(process.env.RESEND_API_KEY as string);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
