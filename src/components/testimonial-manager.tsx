@@ -70,7 +70,7 @@ export function TestimonialManager() {
                 <Shield className="w-4 h-4" />
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-106.25">
               <DialogHeader>
                 <DialogTitle>Accès Administrateur</DialogTitle>
                 <DialogDescription>
@@ -110,7 +110,7 @@ export function TestimonialManager() {
               <Plus className="w-4 h-4" /> Laisser un témoignage
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px] rounded-4xl p-8">
+          <DialogContent className="sm:max-w-125 rounded-4xl p-8">
             <AnimatePresence mode="wait">
               {!isSuccess ? (
                 <motion.div
@@ -155,7 +155,7 @@ export function TestimonialManager() {
                         value={formData.text}
                         onChange={(e) => setFormData({ ...formData, text: e.target.value })}
                         placeholder="Votre avis sur notre collaboration..."
-                        className="min-h-[120px] rounded-xl bg-secondary border-none resize-none"
+                        className="min-h-30 rounded-xl bg-secondary border-none resize-none"
                       />
                     </div>
                     <Button type="submit" className="h-14 bg-royal-blue rounded-xl text-lg font-bold">

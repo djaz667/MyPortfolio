@@ -33,6 +33,7 @@ export default function About() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
+          whileTap={{ filter: "grayscale(0%)" }} 
           className="rounded-[3rem] overflow-hidden bg-secondary border border-border" 
         >
           <img 
@@ -72,7 +73,7 @@ export default function About() {
               }
             ].map((item, i) => (
               <div key={i} className="flex flex-col gap-2 relative pl-8 border-l border-border">
-                <div className="absolute left-[-5px] top-2 w-2 h-2 rounded-full bg-royal-blue" />
+                <div className="absolute -left-1.25 top-2 w-2 h-2 rounded-full bg-royal-blue" />
                 <span className="text-sm font-semibold text-royal-blue">{item.year}</span>
                 <h3 className="text-xl font-bold">{item.title} — {item.company}</h3>
                 <p className="text-muted-foreground">{item.desc}</p>
@@ -102,7 +103,7 @@ export default function About() {
               }
             ].map((item, i) => (
               <div key={i} className="flex flex-col gap-2 relative pl-8 border-l border-border">
-                <div className="absolute left-[-5px] top-2 w-2 h-2 rounded-full bg-royal-blue" />
+                <div className="absolute -left-1.25 top-2 w-2 h-2 rounded-full bg-royal-blue" />
                 <span className="text-sm font-semibold text-royal-blue">{item.year}</span>
                 <h3 className="text-xl font-bold">{item.title}</h3>
                 <p className="text-muted-foreground">{item.school} — {item.desc}</p>

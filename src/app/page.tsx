@@ -78,6 +78,7 @@ export default function Home() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            whileTap={{ filter: "grayscale(0%)" }} 
             className="aspect-square rounded-[3rem] overflow-hidden bg-secondary border border-border"
           >
             <div className="aspect-square rounded-[3rem] overflow-hidden bg-secondary">
