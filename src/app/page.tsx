@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { lazy, Suspense } from "react";
+import { useState, lazy, Suspense } from "react";
 import { ArrowRight, Code, Layout, Smartphone, Star, Mail, Linkedin, Github, Send, Cloud, Globe, Cpu, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,8 @@ const stagger = {
 };
 
 export default function Home() {
+  const [isImageColor, setIsImageColor] = useState(false);
+
   return (
     <div className="flex flex-col gap-24 pb-24">
       {/* Hero Section */}
@@ -73,12 +75,14 @@ export default function Home() {
       {/* About Section Brief */}
       <section className="px-6 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            whileTap={{ filter: "grayscale(0%)" }} 
+            whileTap={{ filter: "grayscale(0%)" }}
+            onTouchStart={() => setIsImageColor(true)}
+            onTouchEnd={() => setIsImageColor(false)}
             className="aspect-square rounded-[3rem] overflow-hidden bg-secondary border border-border"
           >
             <div className="aspect-square rounded-[3rem] overflow-hidden bg-secondary">
@@ -87,7 +91,7 @@ export default function Home() {
                 alt="Abakar Djazime Saleh"
                 width={400}
                 height={400}
-                className="w-full h-full object-cover object-top grayscale hover:grayscale-0 transition-all duration-500"
+                className={`w-full h-full object-cover object-top transition-all duration-500 ${isImageColor ? 'grayscale-0' : 'grayscale'} hover:grayscale-0`}
                 priority
               />
             </div>

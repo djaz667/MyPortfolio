@@ -1,9 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { GraduationCap, Briefcase, Award, CheckCircle2 } from "lucide-react";
 
 export default function About() {
+  const [isImageColor, setIsImageColor] = useState(false);
+
   return (
     <div className="flex flex-col gap-24 pb-24 px-6 max-w-7xl mx-auto w-full pt-12">
       {/* Intro Section */}
@@ -29,17 +32,19 @@ export default function About() {
             </p>
           </motion.div>
         
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          whileTap={{ filter: "grayscale(0%)" }} 
-          className="rounded-[3rem] overflow-hidden bg-secondary border border-border" 
+          whileTap={{ filter: "grayscale(0%)" }}
+          onTouchStart={() => setIsImageColor(true)}
+          onTouchEnd={() => setIsImageColor(false)}
+          className="rounded-[3rem] overflow-hidden bg-secondary border border-border"
         >
-          <img 
-            src="assets/profil.jpg" 
+          <img
+            src="assets/profil.jpg"
             alt="Portrait Abakar"
-            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+            className={`w-full h-full object-cover transition-all duration-700 ${isImageColor ? 'grayscale-0' : 'grayscale'} hover:grayscale-0`}
           />
         </motion.div>
       </section>
