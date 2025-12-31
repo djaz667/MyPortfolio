@@ -2,58 +2,107 @@
 import { Resend } from "resend";
 import type { NextRequest } from "next/server";
 
-// Initialisation de Resend avec la clé de ton .env.local
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: NextRequest) {
-  try {
-    // 1️⃣ Récupération des données envoyées par le formulaire
-    const { name, email, subject, message } = await req.json();
+  // ✅ Vérification immédiate de la clé API
+  if (!process.env.RESEND_API_KEY) {
+    return new Response(
+      JSON.stringify({ success: false, error: "Clé API Resend manquante" }), 
+      { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
 
-    // 2️⃣ Envoi du mail via Resend (pour logs / historique)
+  // ✅ Vérification des variables Telegram (optionnelles)
+  if (!process.env.CONTACT_EMAIL || !process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) {
+    console.error("Variables d'environnement manquantes pour notifications");
+  }
+
+  try {
+    // 1️⃣ Récupération et validation des données du formulaire
+    const body = await req.json();
+    const { name, email, subject, message } = body;
+
+    // Validation basique
+    if (!name || !email || !subject || !message) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Tous les champs sont requis" }), 
+        { status: 400 }
+      );
+    }
+
+    // 2️⃣ Envoi du mail via Resend
+    const resend = new Resend(process.env.RESEND_API_KEY); // ✅ Initialisation DANS le try
+    
     await resend.emails.send({
-      from: "Portfolio <no-reply@resend.dev>",
+      from: "Portfolio <no-reply@resend.dev>", // ✅ Changez par votre domaine vérifié
       to: process.env.CONTACT_EMAIL as string,
-      replyTo: email, // permet de répondre directement à l’utilisateur
+      replyTo: email,
       subject: `[Portfolio] ${subject}`,
-      text: `Nom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      text: `Nom: ${name}\nEmail: ${email}\nSujet: ${subject}\n\nMessage:\n${message}`,
       html: `
-        <p><strong>Nom :</strong> ${name}</p>
-        <p><strong>Email :</strong> ${email}</p>
-        <p><strong>Sujet :</strong> ${subject}</p>
-        <p><strong>Message :</strong></p>
-        <p>${message}</p>
+        <h2>📩 Nouveau message Portfolio</h2>
+        <p><strong>👤 Nom :</strong> ${name}</p>
+        <p><strong>📧 Email :</strong> ${email}</p>
+        <p><strong>📝 Sujet :</strong> ${subject}</p>
+        <hr>
+        <p><strong>💬 Message :</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
       `,
     });
 
-    // 3️⃣ Notification Telegram
-    const telegramMessage = `
-📩 Nouveau message Portfolio
+    // 3️⃣ Notification Telegram (si configurée)
+    if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) {
+      const telegramMessage = `📩 *Nouveau message Portfolio*
 
-👤 Nom : ${name}
-📧 Email : ${email}
-📝 Sujet : ${subject}
+👤 *Nom* : ${name}
+📧 *Email* : ${email}
+📝 *Sujet* : ${subject}
 
-💬 Message :
-${message}
-    `;
+💬 *Message* :
+${message}`;
 
-    await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: process.env.TELEGRAM_CHAT_ID,
-          text: telegramMessage,
-        }),
+      await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: telegramMessage,
+            parse_mode: "Markdown", // ✅ Pour le formatage
+          }),
+        }
+      );
+    }
+
+    // 4️⃣ Réponse de succès
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        message: "Message envoyé avec succès !" 
+      }), 
+      { 
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
       }
     );
 
-    // 4️⃣ Réponse OK
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (err) {
-    console.error("Erreur API Contact :", err);
-    return new Response(JSON.stringify({ success: false }), { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Erreur API Contact :", err);
+    
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: "Erreur lors de l'envoi du message" 
+      }), 
+      { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 }
