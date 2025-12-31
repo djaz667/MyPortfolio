@@ -29,6 +29,41 @@ const stagger = {
 export default function Home() {
   const [isImageColor, setIsImageColor] = useState(false);
 
+    // ✅ ÉTATS FORMULAIRE
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('null');
+
+  // ✅ FONCTION SUBMIT
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('null');
+    setSuccess(false);
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccess(true);
+        (e.currentTarget as HTMLFormElement).reset();
+      } else {
+        setError(data.error || 'Erreur inconnue');
+      }
+    } catch (err) {
+      setError('Erreur réseau');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-24 pb-24">
       {/* Hero Section */}
@@ -316,7 +351,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* ✅ CONTACT SECTION CORRIGÉE */}
       <section id="contact" className="px-6 py-24 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
           <div className="flex flex-col gap-8">
@@ -347,24 +382,67 @@ export default function Home() {
             viewport={{ once: true }}
             className="bg-white dark:bg-zinc-900 p-8 md:p-12 rounded-[3rem] border border-border/50 shadow-xl shadow-black/5"
           >
-            <form className="flex flex-col gap-8" onSubmit={(e) => e.preventDefault()}>
+            {/* ✅ FORMULAIRE AVEC FEEDBACK */}
+            <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex flex-col gap-3">
                   <label className="text-sm font-bold uppercase tracking-widest px-1 text-muted-foreground">Nom</label>
-                  <Input placeholder="Votre nom" className="h-14 rounded-2xl bg-secondary border-none" />
+                  <input 
+                    name="name" 
+                    required 
+                    placeholder="Votre nom" 
+                    className="h-14 rounded-2xl bg-secondary border-none px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-royal-blue"
+                  />
                 </div>
                 <div className="flex flex-col gap-3">
                   <label className="text-sm font-bold uppercase tracking-widest px-1 text-muted-foreground">Email</label>
-                  <Input type="email" placeholder="votre@email.com" className="h-14 rounded-2xl bg-secondary border-none" />
+                  <input 
+                    type="email" 
+                    name="email" 
+                    required 
+                    placeholder="votre@email.com" 
+                    className="h-14 rounded-2xl bg-secondary border-none px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-royal-blue"
+                  />
                 </div>
               </div>
+              
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-bold uppercase tracking-widest px-1 text-muted-foreground">Sujet</label>
+                <input 
+                  name="subject" 
+                  required 
+                  placeholder="Sujet de votre message" 
+                  className="h-14 rounded-2xl bg-secondary border-none px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-royal-blue"
+                />
+              </div>
+              
               <div className="flex flex-col gap-3">
                 <label className="text-sm font-bold uppercase tracking-widest px-1 text-muted-foreground">Message</label>
-                <Textarea placeholder="Parlez-moi de votre projet..." className="min-h-40 rounded-2xl bg-secondary border-none resize-none" />
+                <textarea 
+                  name="message" 
+                  required 
+                  rows={5}
+                  placeholder="Parlez-moi de votre projet..." 
+                  className="min-h-40 rounded-2xl bg-secondary border-none resize-none px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-royal-blue"
+                />
               </div>
-              <Button className="h-16 rounded-2xl bg-royal-blue hover:bg-royal-blue/90 text-white text-lg font-bold group">
-                Envoyer le message <Send className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-              </Button>
+
+              {/* ✅ MESSAGES DE FEEDBACK */}
+              {success && (
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-2xl text-green-700 text-center font-semibold text-lg animate-in slide-in-from-top-2 duration-300">
+                  ✅ Message envoyé avec succès !
+                </div>
+              )}
+
+              {/* ✅ BOUTON AVEC LOADING */}
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="h-16 rounded-2xl bg-royal-blue hover:bg-royal-blue/90 text-white text-lg font-bold group px-6 py-4 flex items-center justify-center gap-2 shadow-lg shadow-royal-blue/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Envoi..." : "Envoyer le message"}
+                <Send className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </button>
             </form>
           </motion.div>
         </div>

@@ -20,23 +20,39 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // 1️⃣ Récupération et validation des données du formulaire
-    const body = await req.json();
+    // ✅ DÉTECTION AUTOMATIQUE : JSON (page /contact) ou FORM (page d'accueil)
+    let body: any;
+    const contentType = req.headers.get('content-type') || '';
+    
+    if (contentType.includes('application/json')) {
+      // Page /contact → JSON
+      body = await req.json();
+    } else {
+      // Page d'accueil → FORM data
+      const formData = await req.formData();
+      body = {
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        subject: formData.get('subject') as string,
+        message: formData.get('message') as string,
+      };
+    }
+
     const { name, email, subject, message } = body;
 
     // Validation basique
     if (!name || !email || !subject || !message) {
       return new Response(
         JSON.stringify({ success: false, error: "Tous les champs sont requis" }), 
-        { status: 400 }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
     // 2️⃣ Envoi du mail via Resend
-    const resend = new Resend(process.env.RESEND_API_KEY); // ✅ Initialisation DANS le try
+    const resend = new Resend(process.env.RESEND_API_KEY);
     
     await resend.emails.send({
-      from: "Portfolio <no-reply@resend.dev>", // ✅ Changez par votre domaine vérifié
+      from: "Portfolio <no-reply@resend.dev>",
       to: process.env.CONTACT_EMAIL as string,
       replyTo: email,
       subject: `[Portfolio] ${subject}`,
@@ -73,7 +89,7 @@ ${message}`;
           body: JSON.stringify({
             chat_id: process.env.TELEGRAM_CHAT_ID,
             text: telegramMessage,
-            parse_mode: "Markdown", // ✅ Pour le formatage
+            parse_mode: "Markdown",
           }),
         }
       );
