@@ -53,7 +53,7 @@ export default function Contact() {
       <div className="flex flex-col gap-6 max-w-2xl">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight">Contact</h1>
         <p className="text-xl text-muted-foreground leading-relaxed">
-          Une idée à partager, un projet à discuter, ou juste un petit bonjour ? N'hésitez pas à me contacter !
+          Une idée à partager, un projet à discuter ? N'hésitez pas à me contacter !
         </p>
       </div>
 
