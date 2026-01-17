@@ -18,6 +18,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className="scroll-smooth">
+      <head>
+        <Script
+          strategy="beforeInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-DM7Y7JFS9K"
+        />
+        <Script
+          id="google-analytics"
+          strategy="beforeInteractive"
+        >
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-DM7Y7JFS9K');
+          `}
+        </Script>
+      </head>
       <body className="antialiased font-sans selection:bg-royal-blue selection:text-white">
 
         <ErrorReporter />
